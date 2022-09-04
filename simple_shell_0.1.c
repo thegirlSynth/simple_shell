@@ -25,15 +25,17 @@ int main(void)
 		if (nread == EOF)
 		{
 			if (isatty(STDIN_FILENO))
-				write(1, newline, 2);
+				write(1, newline, 1);
 			free(buffer);
 			return (0);
 		}
 
 		ret = execute(args);
 		if (ret == 1)
+		{
+			free(buffer);
 			return (1);
-
+		}
 	}
 
 
