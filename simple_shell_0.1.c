@@ -38,6 +38,12 @@ int main(void)
 		}
 	}
 
+	free(buffer);
+
+	return (0);
+
+	}
+
 
 	free(buffer);
 	return (0);
@@ -47,9 +53,9 @@ int main(void)
 /**
  * execute - execute commands
  * @args: array of commands
+ *
  * Return: 0 on success
  */
-
 int execute(char **args)
 {
 	pid_t child_pid;
