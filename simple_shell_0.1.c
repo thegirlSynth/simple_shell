@@ -1,32 +1,38 @@
 #include "main.h"
 
-int execute(char **args);
-char *read_line(void);
-char **tokenize(char *buffer);
 
 /**
  * main - super simple unix shell. Version 1.0.
  * Return: 0 on success.
  */
 
-int main(/*int argc , char **argv*/void)
+int main(void)
 {
 	char *buffer, *prompt = "$ ";
 	char **args;
-	int status;
+	int status = 1;
+       
 
-
-	do {
+	while(status)
+	{
 		if (isatty(STDIN_FILENO))
 			write(1, prompt, 2); 
+		
 		buffer = read_line();
-		args = tokenize(buffer);
-		status = execute(args);
+		
+		if (buffer != NULL)
+			args = tokenize(buffer);
+
+		if (args != NULL)
+			status = execute(args);
 
 		free(buffer);
-		free(args);
+		if (buffer != NULL || args != NULL)
+			free(args);
 
-	} while (status);
+
+	}
+
 
 	return (EXIT_SUCCESS);
 
@@ -45,24 +51,30 @@ char *read_line(void)
 	ssize_t nread;
 
 	nread = getline(&buffer, &len, stdin);
-	buffer[nread - 1] = '\0';
 	if (nread == -1)
 	{
-		if (nread == EOF)
+		if (feof(stdin))
 		{
 			if (isatty(STDIN_FILENO))
-				write(1, newline, 2);
+				write(1, newline, 1);
+			free(buffer);
 			exit(EXIT_SUCCESS);
 		}
 
 		else
 		{
 			perror("readline");
+			free(buffer);
 			exit(EXIT_FAILURE);
 		}
+
+		return (NULL);
 	}
 
-	
+
+	if (buffer != NULL)
+		buffer[nread - 1] = '\0';
+
 	return (buffer);
 }
 
@@ -76,21 +88,25 @@ char **tokenize(char *buffer)
 	char **args, *token;
 
 	args = malloc(sizeof(char *) * strlen(buffer));
-	if (args == NULL)
+	if (args == NULL || buffer == NULL || *buffer == '\0')
 		return (NULL);
+
+	/*if (buffer == NULL || *buffer == '\0')
+		return (args);*/
 
 	token = strtok(buffer, " ");
 
 	while (token != NULL)
 	{
-		args[index] = strdup(token);
+		args[index] = token;
 		index++;
 		token = strtok(NULL, " ");
 	}
 
+	args[index] = NULL;
+
 	return (args);
 }
-
 
 
 
@@ -100,16 +116,18 @@ char **tokenize(char *buffer)
  *
  * Return: 0 on success
  */
+
 int execute(char **args)
 {
-	pid_t child_pid;
+	pid_t child_pid = 1;
 
+	if (args == NULL || *args == NULL)
+		return (1);
 
 	child_pid = fork();
 	if (child_pid == -1)
 	{
 		perror("Error:");
-		return (-1);
 	}
 
 	if (child_pid == 0)
@@ -117,6 +135,7 @@ int execute(char **args)
 		if (execve(args[0], args, environ) == -1)
 		{
 			perror("./hsh");
+			free(args);
 			exit (EXIT_FAILURE);
 		}
 	}
