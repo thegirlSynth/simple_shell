@@ -9,7 +9,7 @@
 int main(void)
 {
 	char *buffer, *prompt = "$ ";
-	char **args;
+	char **args = NULL;
 	int status = 1;
        
 
@@ -27,7 +27,7 @@ int main(void)
 			status = execute(args);
 
 		free(buffer);
-		if (buffer != NULL || args != NULL)
+		if (buffer != NULL)
 			free(args);
 
 
@@ -88,11 +88,14 @@ char **tokenize(char *buffer)
 	char **args, *token;
 
 	args = malloc(sizeof(char *) * strlen(buffer));
-	if (args == NULL || buffer == NULL || *buffer == '\0')
+	if (args == NULL)
 		return (NULL);
 
-	/*if (buffer == NULL || *buffer == '\0')
-		return (args);*/
+	if (buffer == NULL || *buffer == '\0')
+	{
+		free(args);
+		return (NULL);
+	}
 
 	token = strtok(buffer, " ");
 
@@ -135,6 +138,7 @@ int execute(char **args)
 		if (execve(args[0], args, environ) == -1)
 		{
 			perror("./hsh");
+			free(*args);
 			free(args);
 			exit (EXIT_FAILURE);
 		}
@@ -144,3 +148,4 @@ int execute(char **args)
 
 	return (1);
 }
+
