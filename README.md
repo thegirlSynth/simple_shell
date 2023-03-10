@@ -8,6 +8,3 @@ Files are compiled with `gcc` with the following flags:
 `gcc -Wall -Werror -Wextra -pedantic -std=gnu89`
 
 ---
-## Authors
-* Cynthia Uche
-* Silvio Ukoth
