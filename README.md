@@ -1,6 +1,7 @@
 # C - Simple Shell
-A simple UNIX command interpreter written as part of the low-level programming and algorith program at ALX-Holberton School.
+A simple UNIX command interpreter written as part of the low-level programming track at ALX-Holberton School.
 It reads commands from either a file or standard input and executes them.
+It is a minified version of the Linux shell, with similar functionalities, but very limited.
 
 ## Compilation
 Files are compiled with `gcc` with the following flags:
